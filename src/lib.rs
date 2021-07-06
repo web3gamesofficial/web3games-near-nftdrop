@@ -9,18 +9,18 @@ use near_sdk::{
     assert_one_yocto, Balance,
 };
 
-///transfer call -> promise accept function, to add key in this contract
+/// transfer call -> promise accept function, to add key in this contract
 mod receiver;
 
 near_sdk::setup_alloc!();
 
-/// Access key allowance for linkdrop keys.
-const ACCESS_KEY_ALLOWANCE: u128 = 500_000_000_000_000_000_000_000;
-
 const GAS_FOR_RESOLVE_TRANSFER: Gas = 10_000_000_000_000;
 const GAS_FOR_NFT_TRANSFER_CALL: Gas = 25_000_000_000_000 + GAS_FOR_RESOLVE_TRANSFER;
 
-///1 Near
+/// Access key allowance for linkdrop keys.
+const ACCESS_KEY_ALLOWANCE: u128 = 500_000_000_000_000_000_000_000;
+
+/// Amount of storage.
 const STORAGE_AMOUNT: u128 = 1_000_000_000_000_000_000_000_000;
 
 #[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize)]
@@ -48,7 +48,8 @@ impl Contract {
         }
     }
 
-    ///pay the storage money = NFT number * 0.5Near
+    /// Deposit amount for NFT drop.
+    /// attached deposit = ACCESS_KEY_ALLOWANCE * total_drop + STORAGE_AMOUNT
     #[payable]
     pub fn drop_deposit(&mut self, total_drop: u128) {
         let sender_id = env::predecessor_account_id();
@@ -64,7 +65,7 @@ impl Contract {
         self.drop_deposits.insert(&sender_id, &total_deposit);
     }
 
-    ///return Unspent money
+    /// Withdraw unused deposit
     #[payable]
     pub fn drop_withdraw(&mut self) -> bool {
         assert_one_yocto();
@@ -91,6 +92,7 @@ impl Contract {
             "Drop deposit must be greater than ACCESS_KEY_ALLOWANCE"
         );
         self.drop_deposits.insert(&nft.owner_id, &(deposit - ACCESS_KEY_ALLOWANCE));
+
         let pk = public_key.into();
         self.accounts.insert(
             &pk,
@@ -137,7 +139,7 @@ impl Contract {
             )
     }
 
-    ///Return deposit balance
+    /// Return deposit balance
     pub fn get_deposit(&self,owner_id:AccountId) -> Balance {
         let deposit = self.drop_deposits.get(&owner_id).expect("Drop deposit not found");
         deposit
