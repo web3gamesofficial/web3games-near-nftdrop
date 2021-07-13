@@ -17,8 +17,7 @@ near_sdk::setup_alloc!();
 /// Access key allowance for linkdrop keys.
 const ACCESS_KEY_ALLOWANCE: u128 = 500_000_000_000_000_000_000_000;
 
-const GAS_FOR_RESOLVE_TRANSFER: Gas = 10_000_000_000_000;
-const GAS_FOR_NFT_TRANSFER_CALL: Gas = 25_000_000_000_000 + GAS_FOR_RESOLVE_TRANSFER;
+const GAS_FOR_NFT_TRANSFER: Gas = 30_000_000_000_000;
 
 ///1 Near
 const STORAGE_AMOUNT: u128 = 1_000_000_000_000_000_000_000_000;
@@ -133,7 +132,7 @@ impl Contract {
                 .as_bytes()
                 .to_vec(),
                 1,
-                GAS_FOR_NFT_TRANSFER_CALL,
+                GAS_FOR_NFT_TRANSFER,
             )
     }
 
